@@ -2,15 +2,98 @@ package org.skypro.skyshop;
 
 import org.skypro.skyshop.search.SearchEngine;
 import org.skypro.skyshop.search.Searchable;
+import org.skypro.skyshop.search.BestResultNotFound;
 import org.skypro.skyshop.product.SimpleProduct;
 import org.skypro.skyshop.product.DiscountedProduct;
 import org.skypro.skyshop.product.FixPriceProduct;
 import org.skypro.skyshop.article.Article;
-import java.util.Arrays;
 
 public class App {
     public static void main(String[] args) {
-        // Создаем товары
+        // Демонстрация проверок данных с обработкой исключений
+        System.out.println("ДЕМОНСТРАЦИЯ ПРОВЕРОК ДАННЫХ \n");
+
+        demonstrateValidationChecks();
+
+        System.out.println("\n СОЗДАНИЕ КОРРЕКТНЫХ ПРОДУКТОВ И СТАТЕЙ \n");
+
+        // Создаем объекты и демонстрируем поиск
+        demonstrateSearchFunctionality();
+    }
+
+    private static void demonstrateValidationChecks() {
+        // Попытка создания продуктов с неправильными данными
+        String[] testCases = {
+                "Пустое название продукта",
+                "Название из пробелов",
+                "Цена = 0",
+                "Цена отрицательная",
+                "Скидка отрицательная",
+                "Скидка больше 100",
+                "Базовая цена = 0",
+                "Пустой заголовок статьи",
+                "Пустое содержание статьи"
+        };
+
+        int testCaseIndex = 0;
+
+        try {
+            SimpleProduct invalidProduct1 = new SimpleProduct("", 10);
+        } catch (IllegalArgumentException e) {
+            System.out.println((++testCaseIndex) + ". " + testCases[0] + ": " + e.getMessage());
+        }
+
+        try {
+            SimpleProduct invalidProduct2 = new SimpleProduct("   ", 10);
+        } catch (IllegalArgumentException e) {
+            System.out.println((++testCaseIndex) + ". " + testCases[1] + ": " + e.getMessage());
+        }
+
+        try {
+            SimpleProduct invalidProduct3 = new SimpleProduct("Нормальное имя", 0);
+        } catch (IllegalArgumentException e) {
+            System.out.println((++testCaseIndex) + ". " + testCases[2] + ": " + e.getMessage());
+        }
+
+        try {
+            SimpleProduct invalidProduct4 = new SimpleProduct("Нормальное имя", -5);
+        } catch (IllegalArgumentException e) {
+            System.out.println((++testCaseIndex) + ". " + testCases[3] + ": " + e.getMessage());
+        }
+
+        try {
+            DiscountedProduct invalidProduct5 = new DiscountedProduct("Нормальное имя", 50, -10);
+        } catch (IllegalArgumentException e) {
+            System.out.println((++testCaseIndex) + ". " + testCases[4] + ": " + e.getMessage());
+        }
+
+        try {
+            DiscountedProduct invalidProduct6 = new DiscountedProduct("Нормальное имя", 50, 150);
+        } catch (IllegalArgumentException e) {
+            System.out.println((++testCaseIndex) + ". " + testCases[5] + ": " + e.getMessage());
+        }
+
+        try {
+            DiscountedProduct invalidProduct7 = new DiscountedProduct("Нормальное имя", 0, 10);
+        } catch (IllegalArgumentException e) {
+            System.out.println((++testCaseIndex) + ". " + testCases[6] + ": " + e.getMessage());
+        }
+
+        try {
+            Article invalidArticle1 = new Article("", "Содержание статьи");
+        } catch (IllegalArgumentException e) {
+            System.out.println((++testCaseIndex) + ". " + testCases[7] + ": " + e.getMessage());
+        }
+
+        try {
+            Article invalidArticle2 = new Article("Заголовок", "");
+        } catch (IllegalArgumentException e) {
+            System.out.println((++testCaseIndex) + ". " + testCases[8] + ": " + e.getMessage());
+        }
+    }
+
+    private static void demonstrateSearchFunctionality() {
+        // Создаем корректные товары
         SimpleProduct banana = new SimpleProduct("Банан", 20);
         SimpleProduct pear = new SimpleProduct("Груша", 30);
         DiscountedProduct apple = new DiscountedProduct("Яблоко", 50, 20);
@@ -71,54 +154,65 @@ public class App {
         searchEngine.add(article4);
         searchEngine.add(article5);
 
-        System.out.println("=== ДЕМОНСТРАЦИЯ ПОИСКОВОГО ДВИЖКА ===\n");
         System.out.println("В поисковом движке: " + searchEngine.getSize() + " объектов\n");
 
-        // Демонстрация поиска с разными строками
-        System.out.println("1. Поиск по запросу 'банан':");
-        Searchable[] bananaResults = searchEngine.search("банан");
-        printSearchResults(bananaResults);
+        // Демонстрация обычного поиска
+        System.out.println("ДЕМОНСТРАЦИЯ ОБЫЧНОГО ПОИСКА");
+        demonstrateRegularSearch(searchEngine);
 
-        System.out.println("2. Поиск по запросу 'яблок':");
-        Searchable[] appleResults = searchEngine.search("яблок");
-        printSearchResults(appleResults);
-
-        System.out.println("3. Поиск по запросу 'арбуз':");
-        Searchable[] watermelonResults = searchEngine.search("арбуз");
-        printSearchResults(watermelonResults);
-
-        System.out.println("4. Поиск по запросу 'фрукт':");
-        Searchable[] fruitResults = searchEngine.search("фрукт");
-        printSearchResults(fruitResults);
-
-        System.out.println("5. Поиск по запросу 'овощ':");
-        Searchable[] vegetableResults = searchEngine.search("овощ");
-        printSearchResults(vegetableResults);
-
-        System.out.println("6. Поиск по запросу 'польза':");
-        Searchable[] healthResults = searchEngine.search("польза");
-        printSearchResults(healthResults);
-
-        System.out.println("7. Поиск по запросу 'рецепт':");
-        Searchable[] recipeResults = searchEngine.search("рецепт");
-        printSearchResults(recipeResults);
-
-        System.out.println("8. Поиск по запросу 'экзотич':");
-        Searchable[] exoticResults = searchEngine.search("экзотич");
-        printSearchResults(exoticResults);
-
-        System.out.println("9. Поиск по запросу 'манго' (не существует):");
-        Searchable[] mangoResults = searchEngine.search("манго");
-        printSearchResults(mangoResults);
-
-        System.out.println("10. Поиск с пустым запросом:");
-        Searchable[] emptyResults = searchEngine.search("");
-        printSearchResults(emptyResults);
+        // Демонстрация нового метода поиска
+        System.out.println("ДЕМОНСТРАЦИЯ ПОИСКА НАИБОЛЕЕ ПОДХОДЯЩЕГО РЕЗУЛЬТАТА");
+        demonstrateBestMatchSearch(searchEngine);
 
         // Демонстрация метода getStringRepresentation
-        System.out.println("11. Демонстрация getStringRepresentation():");
+        System.out.println("ДЕМОНСТРАЦИЯ getStringRepresentation()");
         System.out.println("Товар: " + banana.getStringRepresentation());
         System.out.println("Статья: " + article1.getStringRepresentation());
+    }
+
+    private static void demonstrateRegularSearch(SearchEngine searchEngine) {
+        String[] searchQueries = {"банан", "яблок", "арбуз", "фрукт", "овощ", "польза", "рецепт"};
+
+        for (String query : searchQueries) {
+            System.out.println("\nПоиск по запросу '" + query + "':");
+            Searchable[] results = searchEngine.search(query);
+            printSearchResults(results);
+        }
+    }
+
+    private static void demonstrateBestMatchSearch(SearchEngine searchEngine) {
+        // Успешные случаи поиска
+        String[] successfulQueries = {"банан", "яблок", "арбуз", "польза", "рецепт"};
+
+        for (String query : successfulQueries) {
+            System.out.println("\nПоиск наиболее подходящего для '" + query + "':");
+            try {
+                Searchable bestMatch = searchEngine.findBestMatch(query);
+                System.out.println("Найден наиболее подходящий объект: " + bestMatch.getStringRepresentation());
+            } catch (BestResultNotFound e) {
+                System.out.println("Ошибка при поиске: " + e.getMessage());
+            }
+        }
+
+        // Случаи с исключениями
+        System.out.println("\n--- Случаи с исключениями ---");
+
+        String[] failingQueries = {"клубника", "помидор", ""};
+        String[] errorMessages = {
+                "несуществующий запрос",
+                "другой несуществующий запрос",
+                "пустой запрос"
+        };
+
+        for (int i = 0; i < failingQueries.length; i++) {
+            System.out.println("\nПоиск наиболее подходящего для '" + failingQueries[i] + "' (" + errorMessages[i] + "):");
+            try {
+                Searchable bestMatch = searchEngine.findBestMatch(failingQueries[i]);
+                System.out.println("Найден наиболее подходящий объект: " + bestMatch.getStringRepresentation());
+            } catch (BestResultNotFound e) {
+                System.out.println("Ошибка при поиске: " + e.getMessage());
+            }
+        }
     }
 
     private static void printSearchResults(Searchable[] results) {
@@ -130,6 +224,5 @@ public class App {
                 System.out.println("  - " + result.getStringRepresentation());
             }
         }
-        System.out.println();
     }
 }
