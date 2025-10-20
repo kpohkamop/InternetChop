@@ -6,19 +6,27 @@ import org.skypro.skyshop.search.BestResultNotFound;
 import org.skypro.skyshop.product.SimpleProduct;
 import org.skypro.skyshop.product.DiscountedProduct;
 import org.skypro.skyshop.product.FixPriceProduct;
+import org.skypro.skyshop.product.Product;
 import org.skypro.skyshop.article.Article;
+import org.skypro.skyshop.basket.ProductBasket;
+import java.util.List;
 
 public class App {
     public static void main(String[] args) {
         // Демонстрация проверок данных с обработкой исключений
-        System.out.println("ДЕМОНСТРАЦИЯ ПРОВЕРОК ДАННЫХ \n");
+        System.out.println("=== ДЕМОНСТРАЦИЯ ПРОВЕРОК ДАННЫХ ===\n");
 
         demonstrateValidationChecks();
 
-        System.out.println("\n СОЗДАНИЕ КОРРЕКТНЫХ ПРОДУКТОВ И СТАТЕЙ \n");
+        System.out.println("\n=== СОЗДАНИЕ КОРРЕКТНЫХ ПРОДУКТОВ И СТАТЕЙ ===\n");
 
-        // Создаем объекты и демонстрируем поиск
+        // Создаем корректные объекты и демонстрируем поиск
         demonstrateSearchFunctionality();
+
+        System.out.println("\n=== ДЕМОНСТРАЦИЯ РАБОТЫ КОРЗИНЫ ===\n");
+
+        // Демонстрация работы корзины с новым функционалом
+        demonstrateBasketFunctionality();
     }
 
     private static void demonstrateValidationChecks() {
@@ -134,7 +142,7 @@ public class App {
                         "Из тыквы можно приготовить суп-пюре или запечь в духовке."
         );
 
-        // Создаем поисковый движок с достаточной вместимостью
+        // Создаем поисковый движок
         SearchEngine searchEngine = new SearchEngine(20);
 
         // Добавляем все товары в поисковый движок
@@ -156,16 +164,16 @@ public class App {
 
         System.out.println("В поисковом движке: " + searchEngine.getSize() + " объектов\n");
 
-        // Демонстрация обычного поиска
-        System.out.println("ДЕМОНСТРАЦИЯ ОБЫЧНОГО ПОИСКА");
+        // Демонстрация обычного поиска (теперь возвращает List)
+        System.out.println("=== ДЕМОНСТРАЦИЯ ОБЫЧНОГО ПОИСКА ===");
         demonstrateRegularSearch(searchEngine);
 
         // Демонстрация нового метода поиска
-        System.out.println("ДЕМОНСТРАЦИЯ ПОИСКА НАИБОЛЕЕ ПОДХОДЯЩЕГО РЕЗУЛЬТАТА");
+        System.out.println("=== ДЕМОНСТРАЦИЯ ПОИСКА НАИБОЛЕЕ ПОДХОДЯЩЕГО РЕЗУЛЬТАТА ===");
         demonstrateBestMatchSearch(searchEngine);
 
         // Демонстрация метода getStringRepresentation
-        System.out.println("ДЕМОНСТРАЦИЯ getStringRepresentation()");
+        System.out.println("=== ДЕМОНСТРАЦИЯ getStringRepresentation() ===");
         System.out.println("Товар: " + banana.getStringRepresentation());
         System.out.println("Статья: " + article1.getStringRepresentation());
     }
@@ -175,7 +183,7 @@ public class App {
 
         for (String query : searchQueries) {
             System.out.println("\nПоиск по запросу '" + query + "':");
-            Searchable[] results = searchEngine.search(query);
+            List<Searchable> results = searchEngine.search(query);
             printSearchResults(results);
         }
     }
@@ -215,11 +223,70 @@ public class App {
         }
     }
 
-    private static void printSearchResults(Searchable[] results) {
-        if (results.length == 0) {
+    private static void demonstrateBasketFunctionality() {
+        // Создаем продукты
+        SimpleProduct banana1 = new SimpleProduct("Банан", 20);
+        SimpleProduct banana2 = new SimpleProduct("Банан", 25); // другой банан
+        SimpleProduct apple = new SimpleProduct("Яблоко", 30);
+        DiscountedProduct watermelon = new DiscountedProduct("Арбуз", 100, 10);
+        SimpleProduct pear = new SimpleProduct("Груша", 40);
+
+        // Создаем корзину
+        ProductBasket basket = new ProductBasket();
+
+        // Добавляем продукты в корзину (теперь без ограничения размера)
+        System.out.println("--- Добавление продуктов в корзину ---");
+        basket.addProduct(banana1);
+        basket.addProduct(banana2); // второй банан
+        basket.addProduct(apple);
+        basket.addProduct(watermelon);
+        basket.addProduct(pear);
+        basket.addProduct(new SimpleProduct("Банан", 22)); // третий банан
+
+        System.out.println("\n--- Содержимое корзины после добавления ---");
+        basket.printCartContents();
+
+        // Демонстрация удаления существующего продукта
+        System.out.println("\n--- Удаление существующего продукта 'Банан' ---");
+        List<Product> removedBananas = basket.removeProductsByName("Банан");
+        System.out.println("Удаленные продукты:");
+        if (removedBananas.isEmpty()) {
+            System.out.println("Список пуст");
+        } else {
+            for (Product product : removedBananas) {
+                System.out.println("  - " + product.getName() + ": " + product.getCost() + " руб.");
+            }
+        }
+
+        System.out.println("\n--- Содержимое корзины после удаления бананов ---");
+        basket.printCartContents();
+
+        // Демонстрация удаления несуществующего продукта
+        System.out.println("\n--- Удаление несуществующего продукта 'Апельсин' ---");
+        List<Product> removedOranges = basket.removeProductsByName("Апельсин");
+        System.out.println("Удаленные продукты:");
+        if (removedOranges.isEmpty()) {
+            System.out.println("Список пуст");
+        } else {
+            for (Product product : removedOranges) {
+                System.out.println("  - " + product.getName() + ": " + product.getCost() + " руб.");
+            }
+        }
+
+        System.out.println("\n--- Содержимое корзины после попытки удаления апельсина ---");
+        basket.printCartContents();
+
+        // Очистка корзины
+        System.out.println("\n--- Очистка корзины ---");
+        basket.clearBasket();
+        basket.printCartContents();
+    }
+
+    private static void printSearchResults(List<Searchable> results) {
+        if (results.isEmpty()) {
             System.out.println("Ничего не найдено");
         } else {
-            System.out.println("Найдено " + results.length + " результатов:");
+            System.out.println("Найдено " + results.size() + " результатов:");
             for (Searchable result : results) {
                 System.out.println("  - " + result.getStringRepresentation());
             }

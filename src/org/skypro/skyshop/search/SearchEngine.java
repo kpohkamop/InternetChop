@@ -1,44 +1,32 @@
 package org.skypro.skyshop.search;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SearchEngine {
-    private Searchable[] searchables;
-    private int count;
+    private List<Searchable> searchables;
 
     public SearchEngine(int capacity) {
-        this.searchables = new Searchable[capacity];
-        this.count = 0;
+        this.searchables = new ArrayList<>(capacity);
     }
 
     public void add(Searchable searchable) {
-        if (count < searchables.length) {
-            searchables[count] = searchable;
-            count++;
-        } else {
-            System.out.println("Невозможно добавить объект - поисковый движок заполнен");
-        }
+        searchables.add(searchable);
     }
 
-    public Searchable[] search(String searchString) {
+    // Теперь возвращаем List вместо массива и все результаты вместо 5
+    public List<Searchable> search(String searchString) {
+        List<Searchable> results = new ArrayList<>();
+
         if (searchString == null || searchString.trim().isEmpty()) {
-            return new Searchable[0];
+            return results;
         }
 
-        Searchable[] results = new Searchable[5];
-        int resultsCount = 0;
-
-        for (int i = 0; i < count && resultsCount < 5; i++) {
-            Searchable searchable = searchables[i];
+        for (Searchable searchable : searchables) {
             if (searchable != null &&
                     searchable.getSearchTerm().toLowerCase().contains(searchString.toLowerCase())) {
-                results[resultsCount] = searchable;
-                resultsCount++;
+                results.add(searchable);
             }
-        }
-
-        if (resultsCount < 5) {
-            Searchable[] trimmedResults = new Searchable[resultsCount];
-            System.arraycopy(results, 0, trimmedResults, 0, resultsCount);
-            return trimmedResults;
         }
 
         return results;
@@ -53,8 +41,7 @@ public class SearchEngine {
         Searchable bestMatch = null;
         int maxCount = 0;
 
-        for (int i = 0; i < count; i++) {
-            Searchable searchable = searchables[i];
+        for (Searchable searchable : searchables) {
             if (searchable != null) {
                 String searchTerm = searchable.getSearchTerm().toLowerCase();
                 String searchLower = search.toLowerCase();
@@ -95,10 +82,10 @@ public class SearchEngine {
     }
 
     public int getSize() {
-        return count;
+        return searchables.size();
     }
 
     public int getCapacity() {
-        return searchables.length;
+        return Integer.MAX_VALUE; // Теперь вместимость практически не ограничена
     }
 }
