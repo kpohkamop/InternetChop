@@ -32,7 +32,6 @@ public class SearchEngine {
         return results;
     }
 
-    // Новый метод для поиска наиболее подходящего элемента
     public Searchable findBestMatch(String search) throws BestResultNotFound {
         if (search == null || search.trim().isEmpty()) {
             throw new BestResultNotFound("Поисковый запрос не может быть пустым");
@@ -62,7 +61,6 @@ public class SearchEngine {
         return bestMatch;
     }
 
-    // Вспомогательный метод для подсчета вхождений подстроки
     private int countOccurrences(String text, String substring) {
         if (text == null || substring == null || substring.isEmpty()) {
             return 0;

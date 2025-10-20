@@ -224,17 +224,16 @@ public class App {
     }
 
     private static void demonstrateBasketFunctionality() {
-        // Создаем продукты
+
         SimpleProduct banana1 = new SimpleProduct("Банан", 20);
         SimpleProduct banana2 = new SimpleProduct("Банан", 25); // другой банан
         SimpleProduct apple = new SimpleProduct("Яблоко", 30);
         DiscountedProduct watermelon = new DiscountedProduct("Арбуз", 100, 10);
         SimpleProduct pear = new SimpleProduct("Груша", 40);
 
-        // Создаем корзину
+
         ProductBasket basket = new ProductBasket();
 
-        // Добавляем продукты в корзину (теперь без ограничения размера)
         System.out.println("--- Добавление продуктов в корзину ---");
         basket.addProduct(banana1);
         basket.addProduct(banana2); // второй банан
@@ -246,7 +245,6 @@ public class App {
         System.out.println("\n--- Содержимое корзины после добавления ---");
         basket.printCartContents();
 
-        // Демонстрация удаления существующего продукта
         System.out.println("\n--- Удаление существующего продукта 'Банан' ---");
         List<Product> removedBananas = basket.removeProductsByName("Банан");
         System.out.println("Удаленные продукты:");
@@ -261,7 +259,6 @@ public class App {
         System.out.println("\n--- Содержимое корзины после удаления бананов ---");
         basket.printCartContents();
 
-        // Демонстрация удаления несуществующего продукта
         System.out.println("\n--- Удаление несуществующего продукта 'Апельсин' ---");
         List<Product> removedOranges = basket.removeProductsByName("Апельсин");
         System.out.println("Удаленные продукты:");
