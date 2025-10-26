@@ -9,6 +9,7 @@ import org.skypro.skyshop.product.FixPriceProduct;
 import org.skypro.skyshop.product.Product;
 import org.skypro.skyshop.article.Article;
 import org.skypro.skyshop.basket.ProductBasket;
+import java.util.Map;
 import java.util.List;
 
 public class App {
@@ -164,7 +165,6 @@ public class App {
 
         System.out.println("В поисковом движке: " + searchEngine.getSize() + " объектов\n");
 
-        // Демонстрация обычного поиска (теперь возвращает List)
         System.out.println("=== ДЕМОНСТРАЦИЯ ОБЫЧНОГО ПОИСКА ===");
         demonstrateRegularSearch(searchEngine);
 
@@ -172,7 +172,6 @@ public class App {
         System.out.println("=== ДЕМОНСТРАЦИЯ ПОИСКА НАИБОЛЕЕ ПОДХОДЯЩЕГО РЕЗУЛЬТАТА ===");
         demonstrateBestMatchSearch(searchEngine);
 
-        // Демонстрация метода getStringRepresentation
         System.out.println("=== ДЕМОНСТРАЦИЯ getStringRepresentation() ===");
         System.out.println("Товар: " + banana.getStringRepresentation());
         System.out.println("Статья: " + article1.getStringRepresentation());
@@ -183,7 +182,7 @@ public class App {
 
         for (String query : searchQueries) {
             System.out.println("\nПоиск по запросу '" + query + "':");
-            List<Searchable> results = searchEngine.search(query);
+            Map<String, Searchable> results = searchEngine.search(query);
             printSearchResults(results);
         }
     }
@@ -231,7 +230,6 @@ public class App {
         DiscountedProduct watermelon = new DiscountedProduct("Арбуз", 100, 10);
         SimpleProduct pear = new SimpleProduct("Груша", 40);
 
-
         ProductBasket basket = new ProductBasket();
 
         System.out.println("--- Добавление продуктов в корзину ---");
@@ -273,18 +271,18 @@ public class App {
         System.out.println("\n--- Содержимое корзины после попытки удаления апельсина ---");
         basket.printCartContents();
 
-        // Очистка корзины
         System.out.println("\n--- Очистка корзины ---");
         basket.clearBasket();
         basket.printCartContents();
     }
 
-    private static void printSearchResults(List<Searchable> results) {
+    private static void printSearchResults(Map<String, Searchable> results) {
         if (results.isEmpty()) {
             System.out.println("Ничего не найдено");
         } else {
-            System.out.println("Найдено " + results.size() + " результатов:");
-            for (Searchable result : results) {
+            System.out.println("Найдено " + results.size() + " результатов (отсортировано по имени):");
+            for (Map.Entry<String, Searchable> entry : results.entrySet()) {
+                Searchable result = entry.getValue();
                 System.out.println("  - " + result.getStringRepresentation());
             }
         }
