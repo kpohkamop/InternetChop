@@ -1,7 +1,6 @@
 package org.skypro.skyshop.search;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class SearchEngine {
     private List<Searchable> searchables;
@@ -14,9 +13,8 @@ public class SearchEngine {
         searchables.add(searchable);
     }
 
-    // Теперь возвращаем List вместо массива и все результаты вместо 5
-    public List<Searchable> search(String searchString) {
-        List<Searchable> results = new ArrayList<>();
+    public Map<String, Searchable> search(String searchString) {
+        Map<String, Searchable> results = new TreeMap<>();
 
         if (searchString == null || searchString.trim().isEmpty()) {
             return results;
@@ -25,7 +23,7 @@ public class SearchEngine {
         for (Searchable searchable : searchables) {
             if (searchable != null &&
                     searchable.getSearchTerm().toLowerCase().contains(searchString.toLowerCase())) {
-                results.add(searchable);
+                results.put(searchable.getName(), searchable);
             }
         }
 
@@ -84,6 +82,6 @@ public class SearchEngine {
     }
 
     public int getCapacity() {
-        return Integer.MAX_VALUE; // Теперь вместимость практически не ограничена
+        return Integer.MAX_VALUE;
     }
 }
